@@ -1,0 +1,90 @@
+/* General Styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Page Title */
+h1 {
+    font-size: 2em;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Payment Container */
+#payment-container {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Payment Method Labels */
+#payment-methods label {
+    display: block;
+    margin: 10px 0;
+    font-weight: bold;
+}
+
+#payment-methods input[type="radio"] {
+    margin-right: 10px;
+}
+
+/* Payment Form Styling */
+.payment-form {
+    margin-top: 20px;
+}
+
+.payment-form h2 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+.payment-form label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.payment-form input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+/* QR Code Styling */
+#qr-code {
+    width: 200px;
+    height: 200px;
+    display: block;
+    margin: 20px auto;
+}
+
+/* Complete Payment Button */
+#complete-payment {
+    width: 100%;
+    padding: 12px;
+    font-size: 1.2em;
+    color: #fff;
+    background-color: #28a745;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 20px;
+}
+
+#complete-payment:hover {
+    background-color: #218838;
+}

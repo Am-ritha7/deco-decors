@@ -10,8 +10,12 @@ const router = Router();
 const products = [
   {
     id: 1,
+    
     name: "Decorative Vase",
     description: "Beautiful ceramic vase with floral patterns.",
+    imageUrl: "http://localhost:3000/assets/imghm8.jpg"
+
+    
   },
   {
     id: 2,
@@ -106,8 +110,27 @@ router.post(
   }
 );
 
-router.get("/products", (req: Request, res: Response) => {
+router.get("/products", (req: any, res: any) => {
   res.json(products);
+});
+router.post('/api/cart/add', (req: any, res: any) => {
+  const { user_id, product_id } = req.body;
+
+  // Validate input
+  if (!user_id || !product_id) {
+      return res.status(400).json({ error: "user_id and product_id are required" });
+  }
+
+  const query = `INSERT INTO cart (user_id, product_id, date) VALUES (?, ?, date('now'))`;
+
+  db.run(query, [user_id, product_id], (err) => {
+      if (err) {
+          console.error("Error adding item to cart:", err.message);
+          res.status(500).json({ error: "Failed to add item to cart" });
+      } else {
+          res.json({ message: "Item added to cart" });
+      }
+  });
 });
 
 module.exports = router;

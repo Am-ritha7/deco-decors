@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Feedback and Rating</title>
+    <link rel="stylesheet" href="./styles/feedback.css">
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header>
+        <div class="header-content">
+            <h1>Online Store</h1>
+            <button id="logoutButton" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <!-- Main Feedback Section -->
+    <main>
+        <div class="feedback-container">
+            <h2>Leave Your Feedback</h2>
+
+            <!-- Product Rating Form -->
+            <form action="submit-feedback.js" method="POST" id="feedbackForm">
+                <div class="rating-section">
+                    <label for="productRating">Rate this product:</label>
+                    <select name="productRating" id="productRating" required>
+                        <option value="1">1 - Poor</option>
+                        <option value="2">2 - Fair</option>
+                        <option value="3">3 - Good</option>
+                        <option value="4">4 - Very Good</option>
+                        <option value="5">5 - Excellent</option>
+                    </select>
+                </div>
+
+                <!-- Review Text Section -->
+                <div class="review-section">
+                    <label for="productReview">Your Review:</label>
+                    <textarea name="productReview" id="productReview" rows="5" required placeholder="Write your review here..."></textarea>
+                </div>
+
+                <div class="submit-section">
+                    <button type="submit">Submit Feedback</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer Section -->
+    <footer>
+        <p>&copy; 2024 Online Store. All Rights Reserved.</p>
+    </footer>
+
+    <!-- Logout Function -->
+    <script>
+        function logout() {
+            // Redirect to the login page or clear the session
+            window.location.href = "login.html"; // Assuming login page is 'login.html'
+        }
+    </script>
+
+</body>
+</html>

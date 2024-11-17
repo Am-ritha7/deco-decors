@@ -10,11 +10,11 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #08021c;
+ background-color: #333;
 }
 
 .container {
-  background-color: #ffffff;
+  background-color:pink ;
   padding: 2rem;
   border-radius: 8px;
   width: 100%;
