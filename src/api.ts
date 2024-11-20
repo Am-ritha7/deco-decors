@@ -145,15 +145,36 @@ router.get("/cart", (req: any, res: any) => {
     return res.status(400).json({ error: "User not authenticated" });
   }
 
-  const query = `SELECT * FROM cart WHERE user_id = ?`;
+  // SQL Query to join cart and products tables
+  const query = `
+ SELECT
+   cart.cart_id,
+   cart.user_id,
+   cart.product_id,
+   cart.date,
+   products.prod_name AS name,
+   products.image_url,
+   products.price,
+   products.description,
+   COUNT(cart.product_id) AS quantity
+ FROM
+   cart
+ INNER JOIN
+   products ON cart.product_id = products.prod_id
+ WHERE
+   cart.user_id = ?
+ GROUP BY
+   cart.product_id;
+`;
 
   db.all(query, [user_id], (err, rows) => {
     if (err) {
-      console.error("Error retrieving cart items:", err.message);
-      return res.status(500).json({ error: "Failed to retrieve cart items" });
+      console.error("Error fetching cart items:", err.message);
+      return res.status(500).json({ error: "Failed to fetch cart items" });
     }
 
-    res.json(rows); // Send back the list of cart items
+    // Send the combined cart item details as JSON response
+    res.json(rows);
   });
 });
 

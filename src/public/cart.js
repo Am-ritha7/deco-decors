@@ -20,9 +20,20 @@ async function loadCartItems() {
   const totalPriceElement = document.getElementById("totalPrice");
   cartItemsBody.innerHTML = ""; // Clear any existing content
   totalPrice = 0;
-
+  const token = localStorage.getItem("token");// Assuming user_id is stored in localStorage
+  if (!token) {
+    alert("You must be logged in to add items to the cart.");
+    return;
+  }
   try {
-    const response = await fetch("http://localhost:3000/api/cart"); // Use correct API endpoint
+    const response = await fetch("http://localhost:3000/api/cart", {
+      method: "GET",
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }); // Use correct API endpoint
+
     if (!response.ok) {
       throw new Error("Failed to fetch cart items");
     }
@@ -31,10 +42,10 @@ async function loadCartItems() {
     cartData.forEach(item => {
       const row = document.createElement("tr");
       row.innerHTML = `
-        <td><img src="${item.image_url}" alt="${item.prod_name}" class="cart-item-image" /></td>
-        <td>${item.prod_name}</td>
+        <td><img src="${item.image_url}" alt="${item.name}" class="cart-item-image" /></td>
+        <td>${item.name}</td>
         <td>$${item.price}</td>
-        <td><input type="number" value="1" min="1" class="quantity-input" /></td>
+        <td>#${item.quantity}</td>
       `;
 
       cartItemsBody.appendChild(row);
