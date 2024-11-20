@@ -1,87 +1,134 @@
-// server.js
-const express = require('express');
-const cors = require('cors'); // Enables CORS for front-end to access backend
+let cartItems = []; // Array to store products added to the cart
 
-const app = express();
-app.use(cors()); // Allow all origins (configure as needed)
-app.use(express.json()); // Parse JSON bodies
+function initializeHomePage() {
+  const isLoggedIn = !!localStorage.getItem("token");
+  const guestSection = document.getElementById("guestSection");
+  const dashboardSection = document.getElementById("dashboardSection");
 
-// Sample in-memory database for products
-const products = [
-  {
-    id: 1,
-    name: "Product 1",
-    description: "This is a description of product 1",
-    price: 200,
-    offer: "15% off",
-    imageUrl: "http://localhost:3000/assets/imghm8.jpg",
-  },
-  {
-    id: 2,
-    name: "Product 2",
-    description: "This is a description of product 2",
-    price: 200,
-    offer: "15% off",
-    imageUrl: "http://localhost:3000/assets/imghm15.jpg" ,
-  },
-  {
-    id: 3,
-    name: "Product 3",
-    description: "This is a description of product 3",
-    price: 300,
-    offer: "20% off",
-    imageUrl: "http://localhost:3000/assets/imghm16.jpg",
-  },
-];
-
-// In-memory cart data
-let cart = [];
-
-// Route to get products
-app.get('/api/products', (req, res) => {
-  res.json(products);
-});
-
-// Route to add a product to the cart
-app.post('/api/cart', (req, res) => {
-  const { productId } = req.body;
-  const product = products.find((p) => p.id === productId);
-  
-  if (!product) {
-    return res.status(404).json({ message: 'Product not found' });
-  }
-
-  const cartItem = cart.find((item) => item.id === productId);
-  if (cartItem) {
-    cartItem.quantity += 1;
+  if (isLoggedIn) {
+    // Show the dashboard section for logged-in users
+    guestSection.style.display = "none";
+    dashboardSection.style.display = "block";
+    loadProducts();
+    loadCartItems();
   } else {
-    cart.push({ ...product, quantity: 1 });
+    // Show the guest section for visitors
+    guestSection.style.display = "block";
+    dashboardSection.style.display = "none";
+  }
+}
+
+async function loadProducts() {
+  const productList = document.getElementById("productList");
+  productList.innerHTML = ""; // Clear any existing content
+
+  try {
+    const response = await fetch("http://localhost:3000/api/products"); // Use correct API endpoint
+    if (!response.ok) {
+      throw new Error("Failed to fetch products");
+    }
+    const products = await response.json();
+
+    products.forEach(product => {
+      const productItem = document.createElement("div");
+      productItem.className = "product-item";
+      productItem.innerHTML = `
+        <img src="${product.image_url}" alt="${product.prod_name}" />
+        <h3>${product.prod_name}</h3>
+        <p>${product.description}</p>
+        <p><strong>$${product.price}</strong></p>
+
+        <button class="add-to-cart-btn" onclick="addToCart(${product.prod_id})">Add to Cart</button>
+      `;
+      productList.appendChild(productItem);
+    });
+  } catch (error) {
+    console.error("Error loading products:", error);
+  }
+}
+
+async function loadCartItems() {
+  const token = localStorage.getItem("token");// Assuming user_id is stored in localStorage
+  if (!token) {
+    logout();
+    alert("You must be logged in to add items to the cart.");
+    return;
+  }
+  try {
+    const response = await fetch("http://localhost:3000/api/cart", {
+      method: "GET",
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }); // Use correct API endpoint
+    if (!response.ok) {
+      throw new Error("Failed to fetch cart");
+    }
+    const cart = await response.json();
+    cartItems = [...cart];
+    updateCartCount();
+  } catch(err) {
+
+  }
+}
+
+// Function to add product to the cart
+async function addToCart(prodId) {
+  const token = localStorage.getItem("token");// Assuming user_id is stored in localStorage
+  if (!token) {
+    alert("You must be logged in to add items to the cart.");
+    return;
   }
 
-  res.json(cart);
-});
+  try {
+    const response = await fetch(`http://localhost:3000/api/add-cart/${prodId}`, {
+      method: "GET",
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
 
-// Route to adjust the quantity of a cart item
-app.put('/api/cart/:productId', (req, res) => {
-  const productId = parseInt(req.params.productId, 10);
-  const { amount } = req.body;
+    if (!response.ok) {
+      throw new Error("Failed to add item to cart");
+    }
 
-  const cartItem = cart.find((item) => item.id === productId);
-  if (!cartItem) {
-    return res.status(404).json({ message: 'Item not in cart' });
+    const result = await response.json();
+    cartItems = [...result];
+    updateCartCount();
+  } catch (error) {
+    console.error("Error adding to cart:", error);
+    alert("Failed to add item to cart.");
   }
+}
 
-  cartItem.quantity = Math.max(1, cartItem.quantity + amount);
-  res.json(cart);
-});
+// Update the cart count (not used in the backend, but helpful for front-end display)
+function updateCartCount() {
+  const cartCount = document.getElementById("cartCount");
+  cartCount.textContent = cartItems.length;
+}
 
-// Route to get current cart
-app.get('/api/cart', (req, res) => {
-  res.json(cart);
-});
+// Function to view cart (you can later implement the cart page)
+function viewCart() {
+  window.location.href = 'cart.html'
+  // You can redirect to a cart page or show the cart items in a modal
+}
 
-// Server setup
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+function viewProfile() {
+  alert("Viewing Profile");
+  // You can redirect to a profile page
+}
+
+function logout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user_id"); // Remove the user_id from localStorage when logging out
+  window.location.reload();
+}
+
+function navigateTo(url) {
+  window.location.href = url;
+}
+
+// Initialize page on load
+window.onload = initializeHomePage;

@@ -23,7 +23,10 @@ form.addEventListener("submit", async (event) => {
 
     if (response.ok) {
       alert("Registration successful!");
+      const data = await response.json();
+      localStorage.setItem("token", data.token);
       form.reset();
+      window.location.href = "/shop.html";
     } else {
       alert("Registration failed. Please try again.");
     }

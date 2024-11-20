@@ -1,0 +1,23 @@
+[
+  {
+    "prod_name": "Product 1",
+    "description": "This is a description of product 1",
+    "price": 200,
+    "offer": "15% off",
+    "image_url": "http://localhost:3000/assets/imghm8.jpg"
+  },
+  {
+    "prod_name": "Product 2",
+    "description": "This is a description of product 2",
+    "price": 200,
+    "offer": "15% off",
+    "image_url": "http://localhost:3000/assets/imghm15.jpg"
+  },
+  {
+    "prod_name": "Product 3",
+    "description": "This is a description of product 3",
+    "price": 300,
+    "offer": "20% off",
+    "image_url": "http://localhost:3000/assets/imghm16.jpg"
+  }
+]

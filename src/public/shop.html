@@ -1,15 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shop</title>
-  <link rel="stylesheet" href="shop.css">
-</head>
-<body>
-  <h1>Shop</h1>
-  <div id="product-list"></div>
-  <div id="cart-message">Product added to cart!</div>
-  <script src="shop.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Deco Decors - Shop</title>
+    <link rel="stylesheet" href="./styles/shop.css" />
+  </head>
+  <body>
+    <!-- Header Section -->
+    <header class="header">
+      <div class="logo">
+        <h2>Deco Decors</h2>
+      </div>
+      <div class="header-actions">
+        <!-- Cart Button -->
+        <button id="cartButton" class="cart-button" onclick="viewCart()">
+          <img src="http://localhost:3000/assets/cart-icon.svg" alt="Cart" />
+          <span id="cartCount">0</span>
+        </button>
+        <!-- User Account Profile -->
+        <button
+          id="profileButton"
+          class="profile-button"
+          onclick="viewProfile()"
+        >
+          <img
+            src="http://localhost:3000/assets/profile-icon.svg"
+            alt="Profile"
+          />
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Section -->
+    <div class="container">
+      <!-- Section for guests (Login/Register) -->
+      <div id="guestSection" class="home-section">
+        <h1>Welcome to Deco Decors</h1>
+        <p>Transform your space with beautiful home decor.</p>
+        <div class="button-container">
+          <button onclick="navigateTo('login.html')">Login</button>
+          <button onclick="navigateTo('register.html')">Register</button>
+        </div>
+      </div>
+
+      <!-- Section for logged-in users (Product list) -->
+      <div id="dashboardSection" class="home-section" style="display: none">
+        <h1>Your Collection of Beautiful Home Decor</h1>
+        <p>Explore the latest collection of home decor items</p>
+        <div class="product-list" id="productList">
+          <!-- Products will be dynamically loaded here -->
+        </div>
+      </div>
+    </div>
+
+    <script src="shop.js"></script>
+  </body>
 </html>

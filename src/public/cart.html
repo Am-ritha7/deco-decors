@@ -1,17 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Cart</title>
-  <link rel="stylesheet" href="cart.css">
-</head>
-<body>
-  <div id="cartSection">
-    <h1>Your Cart</h1>
-    <div id="cartList"></div>
-  </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Deco Decors - Cart</title>
+    <link rel="stylesheet" href="./styles/cart.css" />
+  </head>
+  <body>
+    <!-- Header Section -->
+    <div class="header">
+      <div class="logo" onclick="window.location.href='shop.html'">
+        <h2>Deco Decors</h2>
+      </div>
+      <div class="header-actions">
+        <button class="profile-button" onclick="viewProfile()">
+          <img
+            src="http://localhost:3000/assets/profile-icon.svg"
+            alt="Profile"
+          />
+        </button>
+      </div>
+    </div>
 
-  <script src="client_cart.js"></script>
-</body>
+    <!-- Cart Section -->
+    <div class="container" id="cartSection">
+      <h1>Your Cart</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="cartItemsList">
+          <!-- Cart items will be dynamically loaded here -->
+        </tbody>
+      </table>
+      <div id="cartTotal">
+        <p>Total: $<span id="totalPrice">0</span></p>
+        <button onclick="checkout()">Proceed to Checkout</button>
+      </div>
+    </div>
+
+    <script src="cart.js"></script>
+  </body>
 </html>

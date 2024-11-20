@@ -21,7 +21,7 @@ form.addEventListener("submit", async (event) => {
       localStorage.setItem("token", data.token);
       message.textContent = "Login successful!";
       message.style.color = "green";
-      window.location.href = "/home.html";
+      window.location.href = "/shop.html";
     } else {
       message.textContent = "Login failed. Please check your credentials.";
       message.style.color = "red";

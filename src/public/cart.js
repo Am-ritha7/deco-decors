@@ -1,58 +1,72 @@
-const express = require('express');
-const path = require('path');
+let cartItems = []; // Array to store cart items
+let totalPrice = 0;
 
-const app = express();
-const PORT = 3000;
+// Initialize the cart page
+async function initializeCartPage() {
+  const isLoggedIn = !!localStorage.getItem("token");
 
-// Middleware to parse JSON body
-app.use(express.json());
-
-// In-memory cart (this should be replaced with a database in a real application)
-let cart = [];
-
-// Serve static files (like images or CSS) from the public folder
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Endpoint to get the cart
-app.get('/cart', (req, res) => {
-  res.json(cart);
-});
-
-// Endpoint to add items to the cart
-app.post('/cart', (req, res) => {
-  const { id, name, imageUrl, offer, price, quantity } = req.body;
-  if (!id || !name || !price || !quantity) {
-    return res.status(400).json({ message: 'Invalid item data' });
+  if (!isLoggedIn) {
+    // If not logged in, redirect to login page
+    window.location.href = "login.html";
+    return;
   }
 
-  const existingItem = cart.find((item) => item.id === id);
-  if (existingItem) {
-    existingItem.quantity += quantity;
-  } else {
-    cart.push({ id, name, imageUrl, offer, price, quantity });
+  loadCartItems();
+}
+
+// Function to fetch cart items from the API
+async function loadCartItems() {
+  const cartItemsBody = document.getElementById("cartItemsBody");
+  const totalPriceElement = document.getElementById("totalPrice");
+  cartItemsBody.innerHTML = ""; // Clear any existing content
+  totalPrice = 0;
+
+  try {
+    const response = await fetch("http://localhost:3000/api/cart"); // Use correct API endpoint
+    if (!response.ok) {
+      throw new Error("Failed to fetch cart items");
+    }
+    const cartData = await response.json();
+
+    cartData.forEach(item => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td><img src="${item.image_url}" alt="${item.prod_name}" class="cart-item-image" /></td>
+        <td>${item.prod_name}</td>
+        <td>$${item.price}</td>
+        <td><input type="number" value="1" min="1" class="quantity-input" /></td>
+      `;
+
+      cartItemsBody.appendChild(row);
+
+      // Update total price
+      totalPrice += item.price;
+    });
+
+    // Update total price in the UI
+    totalPriceElement.textContent = totalPrice.toFixed(2);
+  } catch (error) {
+    console.error("Error loading cart items:", error);
   }
+}
 
-  res.json({ message: 'Item added to cart', cart });
-});
+// Function to navigate to the cart page
+function viewCart() {
+  alert("Viewing Cart");
+  // You can redirect to a cart page or show the cart items in a modal
+}
 
-// Endpoint to clear the cart
-app.post('/cart/clear', (req, res) => {
-  cart = [];
-  res.json({ message: 'Cart cleared' });
-});
+// Function to view the user profile
+function viewProfile() {
+  alert("Viewing Profile");
+  // You can redirect to a profile page
+}
 
-// Endpoint to checkout
-app.post('/checkout', (req, res) => {
-  if (cart.length === 0) {
-    return res.status(400).json({ message: 'Cart is empty' });
-  }
+// Logout function to clear token and reload page
+function logout() {
+  localStorage.removeItem("token");
+  window.location.reload();
+}
 
-  // Logic for processing checkout can be added here
-  const totalAmount = cart.reduce((total, item) => total + item.price * item.quantity, 0);
-  res.json({ message: 'Checkout successful', totalAmount });
-});
-
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+// Initialize the page on load
+window.onload = initializeCartPage;
