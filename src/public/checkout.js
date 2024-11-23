@@ -1,53 +1,100 @@
-// Sample data - in a real application, fetch this from the server or local storage
-let cartItems = [
-    { id: 1, name: "Product 1", price: 25.00, quantity: 2 },
-    { id: 2, name: "Product 2", price: 40.00, quantity: 1 }
-];
-
-// Display cart items in the summary section
-function displayCartItems() {
-    const cartItemsContainer = document.getElementById("cart-items");
-    const totalPriceElement = document.getElementById("total-price");
-    cartItemsContainer.innerHTML = "";
-
-    let total = 0;
-
-    cartItems.forEach(item => {
-        total += item.price * item.quantity;
-
-        const itemDiv = document.createElement("div");
-        itemDiv.classList.add("cart-item");
-        itemDiv.innerHTML = `
-            <p>${item.name} - $${item.price.toFixed(2)} x ${item.quantity}</p>
-            <p>Subtotal: $${(item.price * item.quantity).toFixed(2)}</p>
-        `;
-        cartItemsContainer.appendChild(itemDiv);
-    });
-
-    totalPriceElement.innerText = `Total: $${total.toFixed(2)}`;
-}
-
-// Handle placing the order
-function placeOrder() {
-    const shippingForm = document.getElementById("shipping-form");
-    const paymentForm = document.getElementById("payment-form");
-
-    if (!shippingForm.checkValidity() || !paymentForm.checkValidity()) {
-        alert("Please fill in all required fields.");
-        return;
+// Fetch and display user details
+async function loadUserDetails() {
+    const token = localStorage.getItem("token");
+  
+    if (!token) {
+      alert("You must be logged in to view the checkout page.");
+      window.location.href = "login.html";
+      return;
     }
-
-    // Mock order submission
-    alert("Order placed successfully!");
-
-    // In a real application, you would send the order data to the server here
-    // Example:
-    // fetch('/api/orders', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({ cartItems, shippingDetails, paymentDetails })
-    // });
-}
-
-// Load cart items on page load
-window.onload = displayCartItems;
+  
+    try {
+      const response = await fetch("http://localhost:3000/api/users", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to fetch user details");
+      }
+  
+      const user = await response.json();
+      document.getElementById("userName").textContent = user.name;
+      document.getElementById("userEmail").textContent = user.email;
+      document.getElementById("userAddress").textContent = user.address;
+    } catch (error) {
+      console.error("Error loading user details:", error);
+    }
+  }
+  
+  // Fetch and display cart items
+  async function loadCartItems() {
+    const token = localStorage.getItem("token");
+  
+    if (!token) {
+      alert("You must be logged in to view the checkout page.");
+      window.location.href = "login.html";
+      return;
+    }
+  
+    try {
+      const response = await fetch("http://localhost:3000/api/cart", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to fetch cart items");
+      }
+  
+      const cartItems = await response.json();
+      const cartItemsContainer = document.getElementById("cartItems");
+      const totalPriceElement = document.getElementById("totalPrice");
+  
+      cartItemsContainer.innerHTML = ""; // Clear previous content
+      let totalPrice = 0;
+  
+      cartItems.forEach((item) => {
+        const subtotal = item.price * item.quantity;
+        totalPrice += subtotal;
+  
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td><img src="${item.image_url}" alt="${item.name}" class="product-image"></td>
+          <td>${item.name}</td>
+          <td>$${item.price.toFixed(2)}</td>
+          <td>${item.quantity}</td>
+          <td>$${subtotal.toFixed(2)}</td>
+        `;
+        cartItemsContainer.appendChild(row);
+      });
+  
+      // Update total price in the UI
+      totalPriceElement.textContent = totalPrice.toFixed(2);
+    } catch (error) {
+      console.error("Error loading cart items:", error);
+    }
+  }
+  
+  // Confirm the order
+  function confirmOrder() {
+    
+    window.location.href = "payment.html";
+  }
+  
+  // Logout function
+  function logout() {
+    localStorage.removeItem("token");
+    window.location.href = "login.html";
+  }
+  
+  // Initialize the checkout page on load
+  window.onload = function () {
+    loadUserDetails();
+    loadCartItems();
+  };
+  

@@ -126,6 +126,53 @@ function createCartTable() {
     }
   );
 }
+function createAdminTable() {
+  db.run(
+    `CREATE TABLE IF NOT EXISTS admin (
+      admin_id INTEGER PRIMARY KEY AUTOINCREMENT,
+      username TEXT UNIQUE,
+      password TEXT NOT NULL
+    )`,
+    (err) => {
+      if (err) {
+        console.error("Error creating admin table:", err.message);
+      } else {
+        console.log("Admin table created or already exists.");
+        seedAdminData();
+      }
+    }
+  );
+}
+function seedAdminData() {
+  const username = "admin";
+  const password = "admin123"; // Use a hashed password in production
+  db.run(
+    `INSERT OR IGNORE INTO admin (username, password) VALUES (?, ?)`,
+    [username, password],
+    (err) => {
+      if (err) {
+        console.error("Error inserting admin data:", err.message);
+      } else {
+        console.log("Admin data inserted or already exists.");
+      }
+    }
+  );
+}
+function createCategoriesTable() {
+  db.run(
+    `CREATE TABLE IF NOT EXISTS product_categories (
+      category_id INTEGER PRIMARY KEY AUTOINCREMENT,
+      category_name TEXT UNIQUE NOT NULL
+    )`,
+    (err) => {
+      if (err) {
+        console.error("Error creating product categories table:", err.message);
+      } else {
+        console.log("Product categories table created or already exists.");
+      }
+    }
+  );
+}
 
 function insertProductsFromJSON() {
   fs.readFile("./products.json", "utf8", (err, data) => {

@@ -1,0 +1,77 @@
+/* General Styles */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: Arial, sans-serif;
+    background: url('./assets/bgimg.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: #fff;
+    overflow: hidden;
+  }
+  
+  /* Centered Content */
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.6); /* Adds a dark overlay */
+  }
+  
+  .content {
+    max-width: 500px;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent box */
+    border-radius: 10px;
+  }
+  
+  /* Title and Paragraph */
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+  }
+  
+  p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+  }
+  
+  /* Buttons */
+  .button-container button {
+    font-size: 1rem;
+    padding: 10px 20px;
+    margin: 10px;
+    color: #fff;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+  }
+  
+  .button-container button:hover {
+    background-color: #0056b3;
+  }
+  
+  .button-container button:active {
+    background-color: #003f7f;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 600px) {
+    h1 {
+      font-size: 2rem;
+    }
+  
+    p {
+      font-size: 1rem;
+    }
+  
+    .button-container button {
+      font-size: 0.9rem;
+    }
+  }
+  

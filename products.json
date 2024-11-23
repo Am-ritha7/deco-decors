@@ -1,23 +1,39 @@
 [
   {
-    "prod_name": "Product 1",
-    "description": "This is a description of product 1",
+    "prod_name": "sequenced pots",
+    "description": "This is a rajastani handworked pots madeup of mirrors,threads and clay",
     "price": 200,
     "offer": "15% off",
     "image_url": "http://localhost:3000/assets/imghm8.jpg"
   },
   {
-    "prod_name": "Product 2",
-    "description": "This is a description of product 2",
+    "prod_name": "thread hanger",
+    "description": "wall hanging that is purely made by wools and bamboos",
     "price": 200,
     "offer": "15% off",
     "image_url": "http://localhost:3000/assets/imghm15.jpg"
   },
   {
-    "prod_name": "Product 3",
-    "description": "This is a description of product 3",
+    "prod_name": "ret painting",
+    "description": "This can make your wall more elegant",
     "price": 300,
     "offer": "20% off",
     "image_url": "http://localhost:3000/assets/imghm16.jpg"
+  },
+  {
+    "prod_name": "Green orchide",
+    "description": "make your room more fresh",
+    "price": 500,
+    "offer": "20% off",
+    "image_url": "http://localhost:3000/assets/imghm40.jpg"
+  },
+  {
+    "prod_name": "Number clock",
+    "description": "clock by scagen",
+    "price": 700,
+    "offer": "20% off",
+    "image_url": "http://localhost:3000/assets/imghm41.jpg"
   }
+ 
+  
 ]

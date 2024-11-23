@@ -72,11 +72,14 @@ function viewProfile() {
   alert("Viewing Profile");
   // You can redirect to a profile page
 }
+function checkout() {
+  window.location.href = 'checkout.html';
+}
 
 // Logout function to clear token and reload page
 function logout() {
   localStorage.removeItem("token");
-  window.location.reload();
+  window.location.href = "login.html";
 }
 
 // Initialize the page on load

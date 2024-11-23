@@ -123,11 +123,11 @@ function viewProfile() {
 function logout() {
   localStorage.removeItem("token");
   localStorage.removeItem("user_id"); // Remove the user_id from localStorage when logging out
-  window.location.reload();
+  window.location.href = "login.html"
 }
 
-function navigateTo(url) {
-  window.location.href = url;
+function checkout() {
+  window.location.href = 'checkout.html';
 }
 
 // Initialize page on load
