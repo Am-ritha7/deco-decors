@@ -28,6 +28,9 @@ const db = new sqlite3.Database("./deco_decors.db", (err) => {
           createFeedbackTable();
           createOrdersTable();
           createCartTable();
+          createAdminTable();
+          createCategoriesTable();
+          createPaymentTable();
         }
       }
     );
@@ -90,10 +93,11 @@ function createFeedbackTable() {
 function createOrdersTable() {
   db.run(
     `CREATE TABLE IF NOT EXISTS orders (
-      order_id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      order_id INTEGER NOT NULL,
       prod_id INTEGER NOT NULL,
-      payment_details TEXT,
       user_id INTEGER NOT NULL,
+      quantity INTEGER NOT NULL,
       FOREIGN KEY (prod_id) REFERENCES products(prod_id),
       FOREIGN KEY (user_id) REFERENCES users(id)
     )`,
@@ -102,6 +106,27 @@ function createOrdersTable() {
         console.error("Error creating orders table:", err.message);
       } else {
         console.log("Orders table created or already exists.");
+      }
+    }
+  );
+}
+
+function createPaymentTable() {
+  db.run(
+    `CREATE TABLE IF NOT EXISTS payments (
+      payment_id INTEGER PRIMARY KEY AUTOINCREMENT,
+      order_id INTEGER UNIQUE,
+      user_id INTEGER NOT NULL,
+      payment_method TEXT,
+      payment_confirmed_at TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id)
+      FOREIGN KEY (order_id) REFERENCES orders(order_id)
+    )`,
+    (err) => {
+      if (err) {
+        console.error("Error creating Payment table:", err.message);
+      } else {
+        console.log("Payment table created or already exists.");
       }
     }
   );
@@ -126,6 +151,7 @@ function createCartTable() {
     }
   );
 }
+
 function createAdminTable() {
   db.run(
     `CREATE TABLE IF NOT EXISTS admin (

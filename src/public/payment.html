@@ -1,63 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Payment</title>
-    <link rel="stylesheet" href="./styles/payment.css">
-</head>
-<body>
-
+    <link rel="stylesheet" href="./styles/payment.css" />
+  </head>
+  <body>
     <!-- Page Title -->
-    <h1>Choose Payment Method</h1>
+    <div id="header">
+      <h1>Choose Payment Method</h1>
+    </div>
+
+    <!-- Order Details Section -->
+    <section id="order-details">
+      <h2>
+        Order: <strong><span id="order-id"></span></strong>
+      </h2>
+      <table id="order-summary">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody id="order-items-body"></tbody>
+      </table>
+      <div id="total-container">
+        <strong>Total: $<span id="total-amount">0.00</span></strong>
+      </div>
+    </section>
 
     <!-- Payment Methods Container -->
     <div id="payment-container">
+      <section id="payment-methods">
+        <label>
+          <input
+            type="radio"
+            name="payment-method"
+            value="card"
+            onclick="showPaymentForm('card')"
+            checked
+          />
+          Card Payment
+        </label>
 
-        <!-- Payment Method Selection -->
-        <section id="payment-methods">
-            <label>
-                <input type="radio" name="payment-method" value="card" onclick="showPaymentForm('card')" checked>
-                Card Payment
-            </label>
+        <label>
+          <input
+            type="radio"
+            name="payment-method"
+            value="cod"
+            onclick="showPaymentForm('cod')"
+          />
+          Cash on Delivery
+        </label>
+      </section>
 
-           
+      <!-- Card Payment Form -->
+      <section id="card-form" class="payment-form">
+        <h2>Card Payment</h2>
+        <label for="card-name">Name on Card</label>
+        <input type="text" id="card-name" required />
 
-            <label>
-                <input type="radio" name="payment-method" value="cod" onclick="showPaymentForm('cod')">
-                Cash on Delivery
-            </label>
-        </section>
+        <label for="card-number">Card Number</label>
+        <input
+          type="text"
+          id="card-number"
+          required
+          pattern="\d{16}"
+          placeholder="1234 5678 9012 3456"
+        />
 
-        <!-- Card Payment Form -->
-        <section id="card-form" class="payment-form">
-            <h2>Card Payment</h2>
-            <label for="card-name">Name on Card</label>
-            <input type="text" id="card-name" required>
+        <label for="expiry">Expiry Date</label>
+        <input type="text" id="expiry" required placeholder="MM/YY" />
 
-            <label for="card-number">Card Number</label>
-            <input type="text" id="card-number" required pattern="\d{16}" placeholder="1234 5678 9012 3456">
+        <label for="cvv">CVV</label>
+        <input
+          type="text"
+          id="cvv"
+          required
+          pattern="\d{3}"
+          placeholder="123"
+        />
+      </section>
 
-            <label for="expiry">Expiry Date</label>
-            <input type="text" id="expiry" required placeholder="MM/YY">
+      <!-- Cash on Delivery Form -->
+      <section id="cod-form" class="payment-form" style="display: none">
+        <h2>Cash on Delivery</h2>
+        <p>
+          Thank you for choosing Cash on Delivery. Please confirm to place your
+          order.
+        </p>
+      </section>
 
-            <label for="cvv">CVV</label>
-            <input type="text" id="cvv" required pattern="\d{3}" placeholder="123">
-        </section>
-
-        
-
-        <!-- Cash on Delivery Form -->
-        <section id="cod-form" class="payment-form" style="display: none;">
-            <h2>Cash on Delivery</h2>
-            <p>Thank you for choosing Cash on Delivery. Please confirm to place your order.</p>
-        </section>
-
-        <!-- Complete Payment Button -->
-        <button id="complete-payment" onclick="completePayment()">Complete Payment</button>
+      <!-- Complete Payment Button -->
+      <button id="complete-payment" onclick="completePayment()">
+        Complete Payment
+      </button>
     </div>
 
     <!-- JavaScript to handle form display based on selected payment method -->
     <script src="payment.js"></script>
-</body>
+  </body>
 </html>

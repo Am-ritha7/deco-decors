@@ -1,18 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Feedback</title>
-  <link rel="stylesheet" href="./styles/feedback.css">
-</head>
-<body>
-  <h1>We value your feedback!</h1>
-  <form id="feedbackForm">
-    <textarea id="feedbackText" rows="5" placeholder="Share your feedback here..." required></textarea>
-    <button type="button" onclick="Feedback()">Submit Feedback</button>
-  </form>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Feedback</title>
+    <link rel="stylesheet" href="./styles/feedback.css" />
+  </head>
+  <body>
+    <h1>We value your feedback!</h1>
 
-  <script src="feedback.js"></script>
-</body>
+    <form id="feedbackForm">
+      <!-- Rating Section -->
+      <div id="rating-section">
+        <label for="rating">Rate our service:</label>
+        <div class="rating">
+          <!-- Star radio inputs and their labels -->
+          <input type="radio" id="star1" name="rating" value="1" />
+          <label for="star1">★</label>
+
+          <input type="radio" id="star2" name="rating" value="2" />
+          <label for="star2">★</label>
+
+          <input type="radio" id="star3" name="rating" value="3" />
+          <label for="star3">★</label>
+
+          <input type="radio" id="star4" name="rating" value="4" />
+          <label for="star4">★</label>
+
+          <input type="radio" id="star5" name="rating" value="5" />
+          <label for="star5">★</label>
+        </div>
+      </div>
+
+      <!-- Feedback Text -->
+      <textarea
+        id="feedbackText"
+        rows="5"
+        placeholder="Share your feedback here..."
+        required
+      ></textarea>
+
+      <button type="button" onclick="Feedback()">Submit Feedback</button>
+    </form>
+
+    <script src="feedback.js"></script>
+  </body>
 </html>

@@ -108,6 +108,10 @@ button {
   border-radius: 5px;
 }
 
+td {
+  text-transform: capitalize;
+}
+
 button:hover {
   background-color: #e07b00;
 }
