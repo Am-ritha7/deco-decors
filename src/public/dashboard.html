@@ -4,96 +4,33 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard</title>
-  <link rel="stylesheet" href="./styles/dashboard.css">
+  <link rel="stylesheet" href="/styles/dashboard.css">
 </head>
 <body>
-  <div class="dashboard-container">
+  <div class="dashboard">
     <!-- Sidebar -->
     <aside class="sidebar">
-      <h2>Admin Panel</h2>
+      <h2>Admin Dashboard</h2>
       <nav>
         <ul>
-          <li><button onclick="showSection('orders')">View Orders</button></li>
-          <li><button onclick="showSection('customers')">View Customers</button></li>
-          <li><button onclick="showSection('feedback')">View Feedback</button></li>
-          <li><button onclick="showSection('payments')">Payment Details</button></li>
-          <li><button onclick="showSection('manage-cart')">Manage Cart</button></li>
+          <li><a href="#" onclick="navigateTo('orders')">Orders</a></li>
+          <li><a href="#" onclick="navigateTo('payments')">Payment History</a></li>
+          <li><a href="#" onclick="navigateTo('users')">Users</a></li>
+          <li><a href="#" onclick="navigateTo('feedback')">Feedback</a></li>
+          <li><a href="/logout">Logout</a></li>
         </ul>
       </nav>
     </aside>
 
     <!-- Main Content -->
-    <main class="content">
-      <header>
-        <h1>Admin Dashboard</h1>
-        <button onclick="logout()" class="logout-button">Logout</button>
-      </header>
-      
-      <section id="orders" class="dashboard-section">
-        <h2>Orders</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Order ID</th>
-              <th>Customer Name</th>
-              <th>Product</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="ordersTable">
-            <!-- Dynamic content -->
-          </tbody>
-        </table>
-      </section>
-
-      <section id="customers" class="dashboard-section" style="display: none;">
-        <h2>Customers</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Customer ID</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Phone</th>
-            </tr>
-          </thead>
-          <tbody id="customersTable">
-            <!-- Dynamic content -->
-          </tbody>
-        </table>
-      </section>
-
-      <section id="feedback" class="dashboard-section" style="display: none;">
-        <h2>Feedback</h2>
-        <div id="feedbackList">
-          <!-- Dynamic feedback list -->
-        </div>
-      </section>
-
-      <section id="payments" class="dashboard-section" style="display: none;">
-        <h2>Payment Details</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Payment ID</th>
-              <th>Order ID</th>
-              <th>Amount</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody id="paymentsTable">
-            <!-- Dynamic content -->
-          </tbody>
-        </table>
-      </section>
-
-      <section id="manage-cart" class="dashboard-section" style="display: none;">
-        <h2>Manage Cart</h2>
-        <p>Feature to add, edit, or remove products in the cart will be implemented here.</p>
-      </section>
+    <main class="main-content">
+      <h1>Welcome, Admin!</h1>
+      <div id="content">
+        <p>Select an option from the sidebar to view details.</p>
+      </div>
     </main>
   </div>
-  <script src="./scripts/dashboard.js"></script>
+
+  <script src="/dashboard.js"></script>
 </body>
 </html>

@@ -26,7 +26,7 @@ document.getElementById('feedbackForm').addEventListener('submit', async (event)
       if (response.ok) {
         responseMessage.textContent = result.message;
         setTimeout(() => {
-          window.location.href = 'login.html';
+          window.location.href = "login.html";
         }, 2000);
       } else {
         responseMessage.textContent = result.message || 'An error occurred.';
