@@ -7,6 +7,14 @@ const saltRounds = 10;
 const JWT_SECRET = "this_is_a_secret";
 const router = Router();
 
+const statusOptions = [
+  "Delivered",
+  "Shipped",
+  "Processing",
+  "Payment Rejected",
+  "Payment Processed",
+];
+
 router.post(
   "/register",
   async (req: Request<{}, {}, User>, res: Response, next: NextFunction) => {
@@ -321,7 +329,6 @@ router.post("/payment/:order_id", (req: Request, res: Response) => {
 
   // Extract payment details from the request body
   const { paymentMethod } = req.body;
-  console.log(paymentMethod, req.body);
   if (!paymentMethod) {
     res.status(400).json({ error: "Payment method is required" });
     return;
@@ -344,7 +351,8 @@ router.post("/payment/:order_id", (req: Request, res: Response) => {
         return res.status(500).json({ error: "Failed to process payment" });
       }
 
-      // Return success message with inserted payment ID
+      clearCart(user_id);
+      updateOrderStatus(order_id, user_id, "Payment Processed");
       res.status(200).json({
         message: "Payment processed successfully",
         payment_id: this.lastID, // Get the ID of the newly inserted record
@@ -413,20 +421,299 @@ router.get("/order/:order_id", (req: Request, res: Response) => {
   });
 });
 
+router.get("/order-status", (req: Request, res: Response) => {
+  // Get token from Authorization header
+  const token: string = req.headers["authorization"]?.split(" ")[1] ?? "";
+
+  // Decode token and extract user_id
+  const user_id = decodeToken(token); // Assuming decodeToken returns user_id from token
+
+  // Check if user_id is valid
+  if (!user_id) {
+    res.status(400).json({ error: "User not authenticated" });
+    return;
+  }
+
+  // Query to fetch orders, status, and payment details
+  const query = `
+    SELECT
+      o.order_id,
+      os.status,
+      p.payment_confirmed_at AS date,
+      pr.prod_name,
+      o.quantity
+    FROM
+      orders o
+    JOIN
+      products pr ON o.prod_id = pr.prod_id
+    JOIN
+      order_status os ON o.order_id = os.order_id
+    JOIN
+      payments p ON o.order_id = p.order_id
+    WHERE
+      o.user_id = ?
+  `;
+
+  // Execute query with the decoded user_id
+  db.all(query, [user_id], (err, rows) => {
+    if (err) {
+      console.error("Error fetching order status:", err.message);
+      return res.status(500).json({ error: "Failed to fetch order status" });
+    }
+
+    if (!rows.length) {
+      return res.status(404).json({ message: "No orders found for this user" });
+    }
+
+    // Group products by order_id
+    const orders = rows.reduce((acc: any[], row: any) => {
+      let order = acc.find((o) => o.id === row.order_id);
+
+      if (!order) {
+        // Create a new order entry if not found
+        order = {
+          id: row.order_id,
+          status: row.status,
+          date: row.date, // Payment confirmed date
+          products: [],
+        };
+        acc.push(order);
+      }
+
+      // Add product to the order
+      order.products.push({
+        name: row.prod_name,
+        quantity: row.quantity,
+      });
+
+      return acc;
+    }, []);
+
+    // Return the grouped orders with product details
+    return res.json(orders);
+  });
+});
+
+// Assuming you're using Express and SQLite (or similar DB)
+router.post("/submit-feedback", async (req: Request, res: Response) => {
+  const { order_id, rating, comments } = req.body;
+  const token: string = req.headers["authorization"]?.split(" ")[1] ?? "";
+  const user_id = decodeToken(token); // Assuming you have a function to decode the JWT token
+
+  // Validate if user_id is extracted
+  if (!user_id) {
+    res.status(400).json({ error: "User not authenticated" });
+  }
+
+  // Validate the incoming data
+  if (!user_id || !order_id || !rating || !comments) {
+    res.status(400).json({ message: "Missing required fields" });
+    return;
+  }
+
+  try {
+    const query = `
+      INSERT INTO feedback (user_id, order_id, rating, comments)
+      VALUES (?, ?, ?, ?)
+    `;
+    const params = [user_id, order_id, rating, comments];
+
+    await db.run(query, params); // Assuming you're using SQLite
+    res.status(201).json({ message: "Feedback submitted successfully" });
+  } catch (error) {
+    console.error("Error submitting feedback:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+router.get("/admin/order-status", (req: Request, res: Response) => {
+  const query = `
+    SELECT
+      os.order_id AS id,
+      os.status,
+      DATE(os.last_update_on) AS date,
+      os.user_id,
+      u.username AS user_name,
+      p.prod_name AS product_name,
+      o.quantity AS product_quantity
+    FROM
+      order_status os
+    JOIN
+      users u ON os.user_id = u.id
+    JOIN
+      orders o ON os.order_id = o.order_id
+    JOIN
+      products p ON o.prod_id = p.prod_id
+    ORDER BY
+      os.order_id, p.prod_name;
+  `;
+
+  db.all(query, [], (err, rows) => {
+    if (err) {
+      console.error("Error fetching order statuses:", err.message);
+      return res.status(500).json({ error: "Failed to fetch order statuses" });
+    }
+
+    // Group the rows by order_id
+    const groupedOrders: any[] = [];
+
+    rows.forEach((row: any) => {
+      let order = groupedOrders.find((order) => order.id === row.id);
+
+      if (!order) {
+        order = {
+          id: row.id,
+          status: row.status,
+          date: row.date,
+          user_id: row.user_id,
+          user_name: row.user_name,
+          products: [],
+        };
+        groupedOrders.push(order);
+      }
+
+      // Add the product to the order's product list
+      order.products.push({
+        name: row.product_name,
+        quantity: row.product_quantity,
+      });
+    });
+
+    // Return the grouped order status
+    return res.json(groupedOrders);
+  });
+});
+
+router.patch("/admin/order-status/:orderId", (req: Request, res: Response) => {
+  const { orderId } = req.params;
+  const { status } = req.body;
+
+  // Validate status
+  if (!statusOptions.includes(status)) {
+    res.status(400).json({ error: "Invalid status" });
+    return;
+  }
+
+  // Update the order status in the database
+  db.run(
+    "UPDATE order_status SET status = ? WHERE order_id = ?",
+    [status, orderId],
+    function (err) {
+      if (err) {
+        return res.status(500).json({ error: "Failed to update order status" });
+      }
+
+      res.json({ message: "Order status updated successfully" });
+    }
+  );
+});
+
+// Endpoint to get all payments for admin
+router.get("/admin/payments", async (req: Request, res: Response) => {
+  try {
+    // SQL query to fetch payment information, joining payments, users, and orders tables
+    const query = `
+      SELECT p.payment_id, p.order_id, p.user_id, p.payment_method, p.payment_confirmed_at, u.username
+      FROM payments p
+      JOIN users u ON p.user_id = u.id
+      ORDER BY p.payment_confirmed_at DESC;
+    `;
+
+    db.all(query, [], (err, rows) => {
+      // Return the grouped order status
+      return res.json(rows);
+    });
+  } catch (error) {
+    console.error("Error fetching payments:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching payment history." });
+  }
+});
+
+router.get("/admin/users", async (req: Request, res: Response) => {
+  try {
+    const query = `
+      SELECT id, username, name, phoneNo, gender, email FROM users
+    `;
+
+    db.all(query, [], (err, rows) => {
+      // Return the grouped order status
+      console.log(rows);
+      return res.json(rows);
+    });
+  } catch (error) {
+    console.error("Error retrieving users:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// Assuming you're using Express and SQLite (or a similar database)
+router.get("/admin/feedbacks", async (Request, res: Response) => {
+  try {
+    // Query to fetch feedbacks with associated user details (assuming user table has username)
+    const query = `
+    SELECT
+      feedback.feedback_id,
+      feedback.order_id,
+      feedback.rating,
+      feedback.comments,
+      users.username
+    FROM feedback
+    JOIN users ON feedback.user_id = users.id
+  `;
+    db.all(query, [], (err, rows) => {
+      // Return the grouped order status
+      console.log(rows);
+      return res.json(rows);
+    });
+  } catch (error) {
+    console.error("Error fetching feedbacks:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
 function decodeToken(token: string) {
   try {
     // Verify the token
     const decoded = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
-
-    // If the token is valid, return the decoded data (payload)
-    console.log("Decoded token:", decoded);
-
     // Assuming 'id' is the user's email in the payload
     return decoded.id; // Return the 'id' (which is the user's email in this case)
   } catch (err: any) {
     console.error("Error verifying token:", err.message);
     return null; // Return null if the token is invalid or expired
   }
+}
+
+function clearCart(userId: string) {
+  const query = `DELETE FROM cart WHERE user_id = ?`;
+  db.run(query, [userId], function (err) {
+    if (err) {
+      console.error("Error deleting cart items:", err.message);
+    } else {
+      console.log(
+        `Successfully deleted ${this.changes} rows for user_id: ${userId}`
+      );
+    }
+  });
+}
+
+function updateOrderStatus(orderId: string, userId: string, status: string) {
+  const query = `
+    INSERT INTO order_status (order_id, status, user_id)
+    VALUES (?, ?, ?);
+  `;
+
+  const params = [orderId, status, userId];
+
+  // Assuming you have a database connection object `db`
+  db.run(query, params, function (err) {
+    if (err) {
+      console.error("Error updating order status:", err.message);
+      return { error: "Failed to update order status" };
+    }
+    console.log(`Order status updated successfully for order_id ${orderId}`);
+    return { message: "Order status updated successfully", orderId };
+  });
 }
 
 module.exports = router;

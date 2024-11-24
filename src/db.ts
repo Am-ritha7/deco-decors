@@ -31,6 +31,7 @@ const db = new sqlite3.Database("./deco_decors.db", (err) => {
           createAdminTable();
           createCategoriesTable();
           createPaymentTable();
+          createOrderStatusTable();
         }
       }
     );
@@ -74,11 +75,10 @@ function createFeedbackTable() {
     `CREATE TABLE IF NOT EXISTS feedback (
       feedback_id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER NOT NULL,
-      prod_id INTEGER NOT NULL,
+      order_id TEXT NOT NULL,
       rating INTEGER NOT NULL,
       comments TEXT,
-      FOREIGN KEY (user_id) REFERENCES users(id),
-      FOREIGN KEY (prod_id) REFERENCES products(prod_id)
+      FOREIGN KEY (user_id) REFERENCES users(id)
     )`,
     (err) => {
       if (err) {
@@ -94,7 +94,7 @@ function createOrdersTable() {
   db.run(
     `CREATE TABLE IF NOT EXISTS orders (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      order_id INTEGER NOT NULL,
+      order_id TEXT NOT NULL,
       prod_id INTEGER NOT NULL,
       user_id INTEGER NOT NULL,
       quantity INTEGER NOT NULL,
@@ -111,11 +111,68 @@ function createOrdersTable() {
   );
 }
 
+function createOrderStatusTable() {
+  db.run(
+    `
+    CREATE TABLE IF NOT EXISTS order_status (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      order_id TEXT NOT NULL,
+      status TEXT NOT NULL,
+      user_id INTEGER NOT NULL,
+      last_update_on DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    );
+  `,
+    function (err) {
+      if (err) {
+        console.error("Error creating table:", err.message);
+        return;
+      }
+      console.log("Order status table created (or already exists).");
+
+      // Drop the trigger if it already exists
+      db.run(
+        `
+      DROP TRIGGER IF EXISTS update_order_status_timestamp;
+    `,
+        function (err) {
+          if (err) {
+            console.error("Error dropping existing trigger:", err.message);
+            return;
+          }
+          console.log("Existing trigger dropped (if any).");
+
+          // Now create the trigger
+          db.run(
+            `
+        CREATE TRIGGER update_order_status_timestamp
+        AFTER UPDATE ON order_status
+        FOR EACH ROW
+        BEGIN
+          UPDATE order_status
+          SET last_update_on = CURRENT_TIMESTAMP
+          WHERE id = OLD.id;
+        END;
+      `,
+            function (err) {
+              if (err) {
+                console.error("Error creating trigger:", err.message);
+                return;
+              }
+              console.log("Trigger for updating last_update_on created.");
+            }
+          );
+        }
+      );
+    }
+  );
+}
+
 function createPaymentTable() {
   db.run(
     `CREATE TABLE IF NOT EXISTS payments (
       payment_id INTEGER PRIMARY KEY AUTOINCREMENT,
-      order_id INTEGER UNIQUE,
+      order_id TEXT UNIQUE,
       user_id INTEGER NOT NULL,
       payment_method TEXT,
       payment_confirmed_at TIMESTAMP,
@@ -184,6 +241,7 @@ function seedAdminData() {
     }
   );
 }
+
 function createCategoriesTable() {
   db.run(
     `CREATE TABLE IF NOT EXISTS product_categories (

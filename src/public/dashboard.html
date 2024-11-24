@@ -1,36 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard</title>
-  <link rel="stylesheet" href="/styles/dashboard.css">
-</head>
-<body>
-  <div class="dashboard">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <h2>Admin Dashboard</h2>
-      <nav>
-        <ul>
-          <li><a href="#" onclick="navigateTo('orders')">Orders</a></li>
-          <li><a href="#" onclick="navigateTo('payments')">Payment History</a></li>
-          <li><a href="#" onclick="navigateTo('users')">Users</a></li>
-          <li><a href="#" onclick="navigateTo('feedback')">Feedback</a></li>
-          <li><a href="/logout">Logout</a></li>
-        </ul>
-      </nav>
-    </aside>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="./styles/dashboard.css" />
+  </head>
+  <body>
+    <div class="dashboard">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <h2>Admin Dashboard</h2>
+        <nav>
+          <ul>
+            <li><a href="#" onclick="navigateTo('orders')">Orders</a></li>
+            <li>
+              <a href="#" onclick="navigateTo('payments')">Payment History</a>
+            </li>
+            <li><a href="#" onclick="navigateTo('users')">Users</a></li>
+            <li><a href="#" onclick="navigateTo('feedback')">Feedback</a></li>
+            <li><a href="/logout">Logout</a></li>
+          </ul>
+        </nav>
+      </aside>
 
-    <!-- Main Content -->
-    <main class="main-content">
-      <h1>Welcome, Admin!</h1>
-      <div id="content">
-        <p>Select an option from the sidebar to view details.</p>
-      </div>
-    </main>
-  </div>
+      <!-- Main Content -->
+      <main class="main-content">
+        <h1>Welcome, Admin!</h1>
+        <div id="content">
+          <p>Select an option from the sidebar to view details.</p>
+        </div>
+      </main>
+    </div>
 
-  <script src="/dashboard.js"></script>
-</body>
+    <script src="./dashboard.js"></script>
+  </body>
 </html>

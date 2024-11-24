@@ -116,8 +116,7 @@ function viewCart() {
 }
 
 function viewProfile() {
-  alert("Viewing Profile");
-  // You can redirect to a profile page
+   window.location.href = 'profile.html'
 }
 
 function logout() {
